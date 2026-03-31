@@ -1,0 +1,8 @@
+apache-airflow
+google-cloud-bigquery
+google-cloud-storage
+pandas
+dbt-bigquery
+kestra
+requests
+duckdb

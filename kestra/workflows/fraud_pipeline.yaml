@@ -1,0 +1,22 @@
+id: fraud_pipeline
+namespace: insurance_fraud
+tasks:
+  - id: download_dataset
+    type: io.kestra.core.tasks.scripts.Bash
+    command: |
+      mkdir -p /tmp/fraud
+      wget -O /tmp/fraud/fraud_dataset.csv "https://huggingface.co/datasets/CiferAI/Cifer-Fraud-Detection-Dataset-AF/resolve/main/fraud_dataset_part1.csv"
+
+  - id: upload_to_gcs
+    type: io.kestra.plugin.gcp.gcs.Upload
+    bucket: fraud-data-lake
+    src: /tmp/fraud/fraud_dataset.csv
+    dest: transactions/fraud_dataset.csv
+
+  - id: load_to_bigquery
+    type: io.kestra.plugin.gcp.bigquery.Load
+    dataset: fraud_dataset
+    table: transactions_raw
+    source_uris:
+      - gs://fraud-data-lake/transactions/fraud_dataset.csv
+    write_disposition: WRITE_TRUNCATE
